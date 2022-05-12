@@ -8,10 +8,13 @@
 
     <script src="https://courses.vipmembervault.com/fe/js/vue.min.js"></script>
     <script src="https://courses.vipmembervault.com/fe/js/jquery-3.6.0.min.js"></script>
+    <script src="https://courses.vipmembervault.com/fe/js/jquery-ui.min.js" type="text/javascript"></script>
+    <script src="https://courses.vipmembervault.com/fe/js/jquery.ui.touch-punch.min.js"></script>
     <script src="https://courses.vipmembervault.com/fe/js/tinymce/tinymce.min.js"></script>
     <script src="scripts.js"></script>
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://courses.vipmembervault.com/fe/css/jquery-ui.min.css" rel="stylesheet" rel="stylesheet" media="screen" />
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" integrity="sha512-5A8nwdMOWrSz20fDsjczgUidUBR8liPYU+WymTZP1lmY9G6Oc7HlZv156XqnsgNUzTyMefFTcsFH/tnJE/+xBg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
@@ -20,7 +23,7 @@
     <div class="w-full">
     <div class="w-1/2 float-left">
     
-        <div id="block_editor_page" class="relative w-full p-4 bg-gray-200 rounded-md">
+        <div id="block_editor_page" class="relative w-full p-4 bg-gray-200 rounded-md sortable">
             <mv-block
                 v-for="(block, index) in blocks"
                 :index="index"
@@ -47,7 +50,7 @@
 
     <script type="text/x-template" id="block_template">
 
-        <div class="w-full flex bg-white p-2">
+        <div class="w-full flex bg-white p-2 mv_block" :id="index">
             <div class="flex-initial w-8 pt-1">
                 <i class="fa fa-arrows w-full" aria-hidden="true"></i>
                 <i class="fa fa-floppy-o w-full mt-2" aria-hidden="true" @click="saveBlock"></i>                
@@ -73,6 +76,7 @@
                 addBlock: function( event ){
                     this.blocks.push( { } );
                     this.saveBlocks();
+                    this.makeSortable();
                 },
                 saveBlocks: function() {
                     console.log( JSON.stringify( this.blocks ) );
@@ -83,6 +87,7 @@
                         //this.deleteAction( this.user_actions[ payload.index ].id );
                         this.$delete( this.blocks, payload.index );
                         this.saveBlocks();
+                        this.makeSortable();
                     } else {
                         //this.user_actions[ payload.index ].trigger = 'user_create_account';
                     }
@@ -92,7 +97,28 @@
                     this.blocks[payload.index] = payload.content;
                     this.saveBlocks();
                 },
-
+                makeSortable: function() {
+                    $('.sortable').sortable({
+                        handle: ".fa-arrows",
+                        stop: function( event, ui ){
+                            var p_sIds = '';
+                            $('.sortable div.mv_block').each(function(){
+                                p_sIds = p_sIds + $(this).prop('id') + ',';
+                            });
+                            console.log( p_sIds );
+                            /*
+                            $.ajax({
+                                method: "POST",
+                                url: "/admin/units/reorder/<?php echo $l_xCourse['id'] ?>",
+                                data: {p_sOrder: p_sIds}
+                            })
+                            .done(function(msg){
+                                saveMV();
+                            });
+                            */
+                        }
+		            });
+                }
             }
         });
     </script>
