@@ -1,6 +1,6 @@
-function initTinyMCE(){
+function initTinyMCE( p_sId = '.tinymce' ){
 	tinymce.init({
-		selector:'.tinymce',
+		selector: p_sId,
 		browser_spellcheck: true,
 		height : 300,
 		menubar: false,
@@ -49,7 +49,7 @@ function initTinyMCE(){
 				//tinyMCE.triggerSave();
 				editor.save();
 				//saveMV();
-				console.log('editor save');
+				//console.log('editor save');
 			});
 			editor.on('keyup', function(e) {
 				//clearTimeout( mvAutoSave );
