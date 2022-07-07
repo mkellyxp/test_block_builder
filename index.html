@@ -30,7 +30,7 @@
                 :key="index"
                 :id="block.id"
                 @delete-block="deleteBlock"
-                @update-block="updateBlock"
+                @save-blocks="saveBlocks"
             >
             </mv-block>
 
@@ -79,6 +79,17 @@
                     this.makeSortable();
                 },
                 saveBlocks: function() {
+                    let l_axTinyEditors = tinymce.editors;
+                    for (var i = 0; i < l_axTinyEditors.length; i++) {
+                        for (var x = 0; x < this.blocks.length; x++) {
+                            if ( ( "block_editor_" + this.blocks[x].id ) == l_axTinyEditors[i].id ) {
+                                console.log('match: ' + l_axTinyEditors[i].id );
+                                this.blocks[x].description = tinymce.get( l_axTinyEditors[i].id ).getContent();
+                                break;
+                            }
+                        }
+
+                    }
                     console.log( JSON.stringify( this.blocks ) );
                     $('#block_data').html( JSON.stringify( this.blocks ) );
                 },
@@ -91,17 +102,6 @@
                     } else {
                         //this.user_actions[ payload.index ].trigger = 'user_create_account';
                     }
-                },
-                updateBlock: function( payload ) {
-                    console.log( payload.content );
-                    for (var i = 0; i < this.blocks.length; i++) {
-                        if ( this.blocks[i].id === payload.id ) {
-                            this.blocks[i].description = payload.content;
-                            break;
-                        }
-                    }
-                    //this.blocks.[payload.id] = payload.content;
-                    this.saveBlocks();
                 },
                 makeSortable: function() {
                     $('.sortable').sortable({
@@ -147,11 +147,7 @@
                 };
             },
             mounted(){
-                //this.id = Math.floor(Math.random()*10000);
-
                 initTinyMCE( '#block_editor_' + this.id );
-
-
                 
                 console.log( this.id );
             },
@@ -159,10 +155,8 @@
                 saveBlock: function( event ) {
                     console.log('save block');
                     tinyMCE.triggerSave();
-                    this.description = tinymce.get("block_editor_" + this.id ).getContent();
-                    console.log( this.description );
-
-                    this.$emit('update-block', { id: this.id, content: this.description } );
+                    //this.description = tinymce.get("block_editor_" + this.id ).getContent();
+                    this.$emit('save-blocks', { id: this.id } );
                 },
                 deleteBlock: function( event ) {
                     this.$emit('delete-block', { id: this.id } );
